@@ -10,9 +10,9 @@
         <script>
             (function () {
                 try {
-                    var theme = localStorage.getItem('theme');
-                    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    if (theme === 'dark' || (!theme && prefersDark)) {
+                    // Dark mode is opt-in via an explicit user choice. A proper
+                    // theme toggle and dark-ready components arrive in later phases.
+                    if (localStorage.getItem('theme') === 'dark') {
                         document.documentElement.classList.add('dark');
                     }
                 } catch (e) {}
