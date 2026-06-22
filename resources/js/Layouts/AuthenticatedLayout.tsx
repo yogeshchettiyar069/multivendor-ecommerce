@@ -17,6 +17,7 @@ function navItemsForRole(role: Role | null): NavItem[] {
     const base: NavItem[] = [{ name: 'Dashboard', routeName: 'dashboard' }];
 
     if (role === 'customer') {
+        base.push({ name: 'Shop', routeName: 'catalog' });
         base.push({ name: 'Become a Vendor', routeName: 'vendor.apply' });
     }
 

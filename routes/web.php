@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Storefront\CatalogController;
+use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\Vendor\ProductController as VendorProductController;
 use App\Http\Controllers\VendorApplicationController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('Welcome', [
-    'canLogin' => Route::has('login'),
-    'canRegister' => Route::has('register'),
-    'laravelVersion' => Application::VERSION,
-    'phpVersion' => PHP_VERSION,
-]))->name('home');
+// Public storefront.
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/products', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 
 // Controlled product image streaming (no direct filesystem path, random names).
 Route::get('/media/products/{product}', [ProductImageController::class, 'show'])
@@ -28,6 +27,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Shopping cart.
+    Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/cart/{item}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{item}', [CartController::class, 'destroy'])->name('cart.destroy');
 
     // Become a vendor — available to customers only.
     Route::middleware('role:customer')->group(function () {
