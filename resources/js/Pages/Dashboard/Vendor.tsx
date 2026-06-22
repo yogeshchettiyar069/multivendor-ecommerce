@@ -1,9 +1,10 @@
 import StatCard from '@/Components/StatCard';
 import { Badge } from '@/Components/ui/badge';
+import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents } from '@/lib/format';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import { AlertTriangle, DollarSign, Package, Wallet } from 'lucide-react';
 
 interface Props {
@@ -74,12 +75,19 @@ export default function VendorDashboard({ vendor, stats }: Props) {
                 )}
 
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Getting started</CardTitle>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle>Your catalogue</CardTitle>
+                        {vendor?.status === 'approved' && (
+                            <Button asChild size="sm">
+                                <Link href={route('vendor.products.index')}>
+                                    <Package className="h-4 w-4" /> Manage products
+                                </Link>
+                            </Button>
+                        )}
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
-                        Product management, image uploads, and order fulfilment arrive in the next
-                        phase. Your commission rate is{' '}
+                        Add and manage your products and variants from the Products area. Your
+                        commission rate is{' '}
                         <span className="font-medium text-foreground">
                             {vendor ? `${Math.round(vendor.commissionRate * 100)}%` : '—'}
                         </span>

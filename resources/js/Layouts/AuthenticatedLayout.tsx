@@ -20,6 +20,10 @@ function navItemsForRole(role: Role | null): NavItem[] {
         base.push({ name: 'Become a Vendor', routeName: 'vendor.apply' });
     }
 
+    if (role === 'vendor') {
+        base.push({ name: 'Products', routeName: 'vendor.products.index' });
+    }
+
     return base;
 }
 
