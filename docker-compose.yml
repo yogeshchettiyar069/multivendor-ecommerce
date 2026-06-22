@@ -1,0 +1,97 @@
+name: multivendor-ecommerce
+
+services:
+  # ---- PHP-FPM application (runs migrations/seed on boot) -------------------
+  app:
+    build:
+      context: .
+      target: app
+    image: multivendor-ecommerce-app
+    env_file: .env
+    environment:
+      CONTAINER_ROLE: app
+    depends_on:
+      mongo:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+    volumes:
+      - storage_data:/var/www/html/storage/app
+    restart: unless-stopped
+
+  # ---- Nginx web server ----------------------------------------------------
+  web:
+    build:
+      context: .
+      target: web
+    image: multivendor-ecommerce-web
+    depends_on:
+      - app
+    ports:
+      - "${APP_PORT:-8080}:80"
+    restart: unless-stopped
+
+  # ---- Queue worker --------------------------------------------------------
+  queue:
+    image: multivendor-ecommerce-app
+    command: php artisan queue:work --tries=3 --sleep=3 --max-time=3600 --timeout=90
+    env_file: .env
+    environment:
+      CONTAINER_ROLE: queue
+    depends_on:
+      app:
+        condition: service_started
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  # ---- MongoDB (single-node replica set so transactions work) --------------
+  mongo:
+    image: mongo:7
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: unless-stopped
+
+  # ---- One-shot replica-set initiation (idempotent) ------------------------
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      mongo:
+        condition: service_healthy
+    entrypoint: ["bash", "-c"]
+    command:
+      - |
+        mongosh --host mongo:27017 --quiet --eval '
+          try {
+            rs.status();
+            print("[mongo-init] replica set already initiated");
+          } catch (e) {
+            print("[mongo-init] initiating replica set rs0...");
+            rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "mongo:27017" }] });
+          }
+        '
+    restart: "no"
+
+  # ---- Redis (cache / session / queue) -------------------------------------
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  redis_data:
+  storage_data:

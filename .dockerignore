@@ -1,0 +1,30 @@
+# VCS / tooling
+.git
+.gitignore
+.github
+.idea
+.vscode
+
+# Build the image's own dependencies (do not copy host artefacts)
+vendor
+node_modules
+public/build
+public/hot
+public/storage
+
+# Secrets / local env (provided at runtime via compose env_file)
+.env
+.env.*
+
+# Ephemeral storage
+storage/app/public/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+
+# Docs / dev-only
+*.md
+Makefile
+phpunit.xml
+tests
