@@ -26,5 +26,3 @@ storage/logs/*
 # Docs / dev-only
 *.md
 Makefile
-phpunit.xml
-tests

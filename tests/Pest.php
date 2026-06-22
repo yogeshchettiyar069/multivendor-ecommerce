@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /*
@@ -14,8 +15,13 @@ use Tests\TestCase;
 |
 */
 
+// MongoDB has no SQL-style RefreshDatabase. Reset the (isolated) test database
+// before each feature test and re-run migrations to recreate indexes.
 pest()->extend(TestCase::class)
-    ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        DB::connection('mongodb')->getDatabase()->drop();
+        Artisan::call('migrate', ['--force' => true]);
+    })
     ->in('Feature');
 
 /*

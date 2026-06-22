@@ -76,7 +76,7 @@
         },
         "platform": {
             "php": "8.3.13",
-            "ext-mongodb": "1.21.0"
+            "ext-mongodb": "2.3.3"
         }
     },
     "minimum-stability": "stable",

@@ -27,8 +27,12 @@ logs: ## Tail application and web logs
 shell: ## Open a shell in the app container
 	docker compose exec app sh
 
-test: ## Run the test suite
-	docker compose exec -e CONTAINER_ROLE=app app php artisan test
+test: ## Run the test suite (installs dev deps in the container on first run)
+	docker compose exec \
+		-e APP_ENV=testing -e MONGODB_DATABASE=ecommerce_testing \
+		-e CACHE_STORE=array -e SESSION_DRIVER=array -e QUEUE_CONNECTION=sync \
+		-e MAIL_MAILER=array -e BCRYPT_ROUNDS=4 \
+		app sh -c "touch .env && composer install --no-interaction -q && php artisan test"
 
 pint: ## Run Laravel Pint (code style)
 	docker compose exec app ./vendor/bin/pint
