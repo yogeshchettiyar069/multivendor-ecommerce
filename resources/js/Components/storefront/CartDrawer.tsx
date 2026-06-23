@@ -2,7 +2,7 @@ import { Button } from '@/Components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/Components/ui/sheet';
 import { formatCents } from '@/lib/format';
 import { CartSummary } from '@/types';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { ImageOff, Minus, Plus, ShoppingBag, Trash2 } from 'lucide-react';
 
 interface Props {
@@ -121,9 +121,10 @@ export default function CartDrawer({ open, onOpenChange, cart }: Props) {
                             <p className="text-xs text-muted-foreground">
                                 Shipping and taxes are calculated at checkout.
                             </p>
-                            {/* Checkout is wired up in the next phase. */}
-                            <Button className="w-full" disabled>
-                                Proceed to Checkout
+                            <Button asChild className="w-full">
+                                <Link href={route('checkout')} onClick={() => onOpenChange(false)}>
+                                    Proceed to Checkout
+                                </Link>
                             </Button>
                         </div>
                     </>

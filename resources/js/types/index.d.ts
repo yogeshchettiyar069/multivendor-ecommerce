@@ -32,6 +32,36 @@ export interface CartSummary {
     subtotalCents: number;
 }
 
+export interface OrderItemDetail {
+    product_name: string;
+    slug: string | null;
+    variant_label: string | null;
+    unit_price_cents: number;
+    quantity: number;
+    line_total_cents: number;
+    thumbnail_url: string | null;
+}
+
+export interface OrderShipping {
+    name?: string;
+    email?: string;
+    address?: string;
+    city?: string;
+    postal_code?: string;
+    country?: string;
+}
+
+export interface OrderDetail {
+    id: string;
+    status: string;
+    subtotal_cents: number;
+    total_cents: number;
+    shipping: OrderShipping | null;
+    placed_at: string | null;
+    created_at: string | null;
+    items: OrderItemDetail[];
+}
+
 export type PageProps<
     T extends Record<string, unknown> = Record<string, unknown>,
 > = T & {

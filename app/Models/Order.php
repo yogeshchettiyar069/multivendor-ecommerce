@@ -45,6 +45,7 @@ class Order extends Model
         'subtotal_cents',
         'total_cents',
         'stripe_payment_intent_id',
+        'shipping',
         'placed_at',
     ];
 
@@ -57,6 +58,7 @@ class Order extends Model
             'status' => OrderStatus::class,
             'subtotal_cents' => 'integer',
             'total_cents' => 'integer',
+            'shipping' => 'array',
             'placed_at' => 'datetime',
         ];
     }
