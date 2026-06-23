@@ -29,7 +29,7 @@ class CheckoutService
      *
      * @param  array<string, mixed>  $shipping
      */
-    public function placeOrder(User $user, array $shipping): Order
+    public function placeOrder(User $user, array $shipping, string $paymentMethod = 'card'): Order
     {
         $lines = $this->buildLines($user);
 
@@ -40,7 +40,7 @@ class CheckoutService
         $connection = DB::connection('mongodb');
 
         /** @var Order $order */
-        $order = $connection->transaction(function () use ($connection, $user, $lines, $shipping): Order {
+        $order = $connection->transaction(function () use ($connection, $user, $lines, $shipping, $paymentMethod): Order {
             $this->inventory->deduct($lines, $connection->getSession());
 
             $subtotal = array_sum(array_map(
@@ -53,6 +53,7 @@ class CheckoutService
                 'status' => OrderStatus::Pending,
                 'subtotal_cents' => $subtotal,
                 'total_cents' => $subtotal,
+                'payment_method' => $paymentMethod,
                 'shipping' => $shipping,
                 'placed_at' => null,
             ]);
@@ -91,6 +92,16 @@ class CheckoutService
 
         // Empty the buyer's cart (recreated lazily on next access).
         Cart::where('user_id', (string) $order->user_id)->delete();
+    }
+
+    /**
+     * Confirm an offline order (UPI / netbanking / cash on delivery): the order
+     * is placed as pending payment, so we just clear the cart. No Stripe, and no
+     * payout until the payment is later collected/confirmed.
+     */
+    public function confirmOffline(User $user): void
+    {
+        $this->cart->clear($user);
     }
 
     /**

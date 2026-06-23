@@ -54,6 +54,7 @@ export interface OrderShipping {
 export interface OrderDetail {
     id: string;
     status: string;
+    payment_method: string | null;
     subtotal_cents: number;
     total_cents: number;
     shipping: OrderShipping | null;

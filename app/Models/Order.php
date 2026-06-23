@@ -45,6 +45,7 @@ class Order extends Model
         'subtotal_cents',
         'total_cents',
         'stripe_payment_intent_id',
+        'payment_method',
         'shipping',
         'placed_at',
     ];

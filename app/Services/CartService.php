@@ -18,6 +18,14 @@ class CartService
     }
 
     /**
+     * Empty the user's cart (the document is recreated lazily on next access).
+     */
+    public function clear(User $user): void
+    {
+        Cart::where('user_id', (string) $user->_id)->delete();
+    }
+
+    /**
      * Add a variant to the cart, merging with an existing line (capped at stock).
      */
     public function add(Cart $cart, string $productId, string $variantId, int $quantity, int $stock): void

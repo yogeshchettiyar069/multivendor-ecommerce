@@ -40,6 +40,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'default_address',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'role' => Role::class,
+            'default_address' => 'array',
         ];
     }
 

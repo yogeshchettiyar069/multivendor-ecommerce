@@ -4,6 +4,13 @@ import { formatCents, formatDate } from '@/lib/format';
 import { OrderDetail } from '@/types';
 import { ImageOff } from 'lucide-react';
 
+const PAYMENT_LABELS: Record<string, string> = {
+    card: 'Card',
+    upi: 'UPI',
+    netbanking: 'Netbanking',
+    cod: 'Cash on Delivery',
+};
+
 export default function OrderDetailCard({ order }: { order: OrderDetail }) {
     return (
         <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
@@ -62,6 +69,10 @@ export default function OrderDetailCard({ order }: { order: OrderDetail }) {
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Placed</span>
                             <span>{formatDate(order.placed_at ?? order.created_at)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Payment</span>
+                            <span>{PAYMENT_LABELS[order.payment_method ?? ''] ?? 'Card'}</span>
                         </div>
                         <div className="flex justify-between border-t border-border pt-2">
                             <span className="text-muted-foreground">Subtotal</span>

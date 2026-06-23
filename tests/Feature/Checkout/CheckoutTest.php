@@ -131,6 +131,27 @@ it('restores stock and cancels the order on failure', function () {
         ->and($product->fresh()->variants->first()->stock)->toBe(5);
 });
 
+it('places an offline (cash on delivery) order as pending, no payout, cart cleared', function () {
+    $user = User::factory()->customer()->create();
+    $product = publishedProduct(stock: 5);
+    cartAdd($user, $product, 1);
+
+    $this->actingAs($user)
+        ->postJson(route('checkout.store'), array_merge(shippingStub(), ['payment_method' => 'cod']))
+        ->assertOk()
+        ->assertJson(['mode' => 'offline']);
+
+    $order = Order::where('user_id', (string) $user->_id)->first();
+
+    expect($order->status)->toBe(OrderStatus::Pending)
+        ->and($order->payment_method)->toBe('cod')
+        ->and(Payout::where('order_id', (string) $order->_id)->count())->toBe(0)
+        ->and(app(CartService::class)->for($user)->items)->toHaveCount(0)
+        ->and($user->fresh()->default_address)->not->toBeNull()
+        ->and($user->fresh()->default_address['city'])->toBe('Testville')
+        ->and($product->fresh()->variants->first()->stock)->toBe(4);
+});
+
 it('splits payouts across vendors net of commission', function () {
     $user = User::factory()->customer()->create();
     $vendorA = Vendor::factory()->create(['commission_rate' => 0.10]);
