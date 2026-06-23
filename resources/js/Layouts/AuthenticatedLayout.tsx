@@ -26,6 +26,12 @@ function navItemsForRole(role: Role | null): NavItem[] {
         base.push({ name: 'Products', routeName: 'vendor.products.index' });
     }
 
+    if (role === 'admin') {
+        base.push({ name: 'Vendors', routeName: 'admin.vendors.index' });
+        base.push({ name: 'Categories', routeName: 'admin.categories.index' });
+        base.push({ name: 'Orders', routeName: 'admin.orders.index' });
+    }
+
     return base;
 }
 
