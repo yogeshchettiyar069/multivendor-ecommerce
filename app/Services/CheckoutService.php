@@ -28,10 +28,12 @@ class CheckoutService
      * create the order inside a single MongoDB transaction (all-or-nothing).
      *
      * @param  array<string, mixed>  $shipping
+     * @param  array{product_id: string, variant_id: string, quantity: int}|null  $directItem  Buy-now item (bypasses the cart).
      */
-    public function placeOrder(User $user, array $shipping, string $paymentMethod = 'card'): Order
+    public function placeOrder(User $user, array $shipping, string $paymentMethod = 'card', ?array $directItem = null): Order
     {
-        $lines = $this->buildLines($user);
+        $lines = $directItem !== null ? $this->buildDirectLines($directItem) : $this->buildLines($user);
+        $fromCart = $directItem === null;
 
         if ($lines === []) {
             throw new RuntimeException('Your cart is empty.');
@@ -40,7 +42,7 @@ class CheckoutService
         $connection = DB::connection('mongodb');
 
         /** @var Order $order */
-        $order = $connection->transaction(function () use ($connection, $user, $lines, $shipping, $paymentMethod): Order {
+        $order = $connection->transaction(function () use ($connection, $user, $lines, $shipping, $paymentMethod, $fromCart): Order {
             $this->inventory->deduct($lines, $connection->getSession());
 
             $subtotal = array_sum(array_map(
@@ -55,6 +57,7 @@ class CheckoutService
                 'total_cents' => $subtotal,
                 'payment_method' => $paymentMethod,
                 'shipping' => $shipping,
+                'from_cart' => $fromCart,
                 'placed_at' => null,
             ]);
 
@@ -90,8 +93,10 @@ class CheckoutService
 
         $this->createPayouts($order);
 
-        // Empty the buyer's cart (recreated lazily on next access).
-        Cart::where('user_id', (string) $order->user_id)->delete();
+        // Empty the buyer's cart (only for cart checkouts, not Buy Now).
+        if ($order->from_cart) {
+            Cart::where('user_id', (string) $order->user_id)->delete();
+        }
     }
 
     /**
@@ -120,6 +125,19 @@ class CheckoutService
     }
 
     /**
+     * Create payouts for an order if it has none yet (e.g. an offline order being
+     * fulfilled, where payment is collected on delivery rather than via Stripe).
+     */
+    public function ensurePayouts(Order $order): void
+    {
+        if (Payout::where('order_id', (string) $order->_id)->exists()) {
+            return;
+        }
+
+        $this->createPayouts($order);
+    }
+
+    /**
      * Split the order per vendor and create a payout net of each commission rate.
      */
     private function createPayouts(Order $order): void
@@ -145,6 +163,40 @@ class CheckoutService
                 'status' => PayoutStatus::Pending,
             ]);
         }
+    }
+
+    /**
+     * Build a single order line for a Buy Now purchase (bypasses the cart).
+     *
+     * @param  array{product_id: string, variant_id: string, quantity: int}  $item
+     * @return array<int, array{product_id: string, variant_id: string, vendor_id: string, unit_price_cents: int, quantity: int, name: string}>
+     */
+    private function buildDirectLines(array $item): array
+    {
+        $product = Product::where('_id', $item['product_id'])
+            ->where('status', ProductStatus::Published->value)
+            ->first();
+
+        if ($product === null) {
+            throw new RuntimeException('That product is not available.');
+        }
+
+        $variant = $product->variants->first(
+            fn ($v): bool => (string) $v->_id === (string) $item['variant_id']
+        );
+
+        if ($variant === null) {
+            throw new RuntimeException('That option is not available.');
+        }
+
+        return [[
+            'product_id' => (string) $product->_id,
+            'variant_id' => (string) $variant->_id,
+            'vendor_id' => (string) $product->vendor_id,
+            'unit_price_cents' => (int) $variant->price_cents,
+            'quantity' => (int) $item['quantity'],
+            'name' => $product->name,
+        ]];
     }
 
     /**

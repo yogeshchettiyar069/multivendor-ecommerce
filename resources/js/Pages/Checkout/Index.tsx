@@ -16,6 +16,7 @@ import { FormEvent, useMemo, useState } from 'react';
 
 interface Props {
     cart: CartSummary;
+    direct: { product_id: string; variant_id: string; quantity: number } | null;
     stripeKey: string | null;
     customer: { name: string; email: string };
     savedAddress: OrderShipping | null;
@@ -63,7 +64,7 @@ function fromSaved(saved: OrderShipping, customer: { name: string; email: string
     };
 }
 
-export default function Checkout({ cart, stripeKey, customer, savedAddress }: Props) {
+export default function Checkout({ cart, direct, stripeKey, customer, savedAddress }: Props) {
     const stripePromise = useMemo(() => (stripeKey ? loadStripe(stripeKey) : null), [stripeKey]);
     const isDark =
         typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
@@ -104,9 +105,16 @@ export default function Checkout({ cart, stripeKey, customer, savedAddress }: Pr
         setSubmitting(true);
         setError(null);
         try {
+            const payload: Record<string, unknown> = { ...shipping, payment_method: method };
+            if (direct) {
+                payload.buy_now = 1;
+                payload.product_id = direct.product_id;
+                payload.variant_id = direct.variant_id;
+                payload.quantity = direct.quantity;
+            }
             const { data } = await axios.post<{ mode: string; clientSecret?: string; orderId: string }>(
                 route('checkout.store'),
-                { ...shipping, payment_method: method },
+                payload,
             );
             if (data.mode === 'card' && data.clientSecret) {
                 setClientSecret(data.clientSecret);

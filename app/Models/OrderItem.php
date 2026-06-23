@@ -17,6 +17,7 @@ use MongoDB\Laravel\Eloquent\Model;
  * @property string $vendor_id
  * @property int $unit_price_cents
  * @property int $quantity
+ * @property bool $fulfilled
  */
 class OrderItem extends Model
 {
@@ -31,6 +32,7 @@ class OrderItem extends Model
         'vendor_id',
         'unit_price_cents',
         'quantity',
+        'fulfilled',
     ];
 
     /**
@@ -41,6 +43,7 @@ class OrderItem extends Model
         return [
             'unit_price_cents' => 'integer',
             'quantity' => 'integer',
+            'fulfilled' => 'boolean',
         ];
     }
 

@@ -190,19 +190,38 @@ export default function Show({ product }: { product: Product }) {
                             )}
                         </div>
 
-                        <div className="mt-6">
+                        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                             {user ? (
-                                <Button
-                                    size="lg"
-                                    className="w-full sm:w-auto"
-                                    disabled={!selected || maxQty < 1 || adding}
-                                    onClick={addToCart}
-                                >
-                                    <ShoppingCart className="h-4 w-4" /> Add to cart
-                                </Button>
+                                <>
+                                    <Button
+                                        size="lg"
+                                        variant="outline"
+                                        disabled={!selected || maxQty < 1 || adding}
+                                        onClick={addToCart}
+                                    >
+                                        <ShoppingCart className="h-4 w-4" /> Add to cart
+                                    </Button>
+                                    <Button
+                                        size="lg"
+                                        disabled={!selected || maxQty < 1}
+                                        onClick={() =>
+                                            selected &&
+                                            router.visit(
+                                                route('checkout', {
+                                                    buy_now: 1,
+                                                    product: product.id,
+                                                    variant: selected.id,
+                                                    qty: quantity,
+                                                }),
+                                            )
+                                        }
+                                    >
+                                        Buy now
+                                    </Button>
+                                </>
                             ) : (
-                                <Button size="lg" className="w-full sm:w-auto" asChild>
-                                    <Link href={route('login')}>Log in to add to cart</Link>
+                                <Button size="lg" asChild>
+                                    <Link href={route('login')}>Log in to buy</Link>
                                 </Button>
                             )}
                         </div>

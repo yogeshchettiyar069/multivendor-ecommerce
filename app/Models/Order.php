@@ -47,6 +47,7 @@ class Order extends Model
         'stripe_payment_intent_id',
         'payment_method',
         'shipping',
+        'from_cart',
         'placed_at',
     ];
 
@@ -60,6 +61,7 @@ class Order extends Model
             'subtotal_cents' => 'integer',
             'total_cents' => 'integer',
             'shipping' => 'array',
+            'from_cart' => 'boolean',
             'placed_at' => 'datetime',
         ];
     }

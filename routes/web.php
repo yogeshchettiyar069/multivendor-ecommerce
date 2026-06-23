@@ -14,6 +14,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Storefront\CatalogController;
 use App\Http\Controllers\Storefront\HomeController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\Vendor\OrderController as VendorOrderController;
 use App\Http\Controllers\Vendor\ProductController as VendorProductController;
 use App\Http\Controllers\VendorApplicationController;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/products/{product}/edit', [VendorProductController::class, 'edit'])->name('products.edit');
         Route::match(['put', 'patch'], '/products/{product}', [VendorProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [VendorProductController::class, 'destroy'])->name('products.destroy');
+
+        Route::get('/orders', [VendorOrderController::class, 'index'])->name('orders.index');
+        Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
+        Route::patch('/orders/{order}/fulfill', [VendorOrderController::class, 'fulfill'])->name('orders.fulfill');
     });
 
     // Admin area.

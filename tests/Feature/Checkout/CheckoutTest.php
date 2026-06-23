@@ -152,6 +152,31 @@ it('places an offline (cash on delivery) order as pending, no payout, cart clear
         ->and($product->fresh()->variants->first()->stock)->toBe(4);
 });
 
+it('buy now places a direct order without using or clearing the cart', function () {
+    $user = User::factory()->customer()->create();
+    $cartProduct = publishedProduct(stock: 5);
+    cartAdd($user, $cartProduct, 1); // a pre-existing cart item that must survive
+
+    $buyProduct = publishedProduct(stock: 5);
+    $variant = $buyProduct->variants->first();
+
+    $order = app(CheckoutService::class)->placeOrder($user, shippingStub(), 'card', [
+        'product_id' => (string) $buyProduct->_id,
+        'variant_id' => (string) $variant->_id,
+        'quantity' => 2,
+    ]);
+
+    expect($order->from_cart)->toBeFalse()
+        ->and($order->items)->toHaveCount(1)
+        ->and((string) $order->items->first()->product_id)->toBe((string) $buyProduct->_id)
+        ->and($buyProduct->fresh()->variants->first()->stock)->toBe(3);
+
+    app(CheckoutService::class)->finalize($order);
+
+    // Buy Now must not touch the cart.
+    expect(app(CartService::class)->for($user)->items)->toHaveCount(1);
+});
+
 it('splits payouts across vendors net of commission', function () {
     $user = User::factory()->customer()->create();
     $vendorA = Vendor::factory()->create(['commission_rate' => 0.10]);
