@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Storefront;
 
 use App\Enums\ProductStatus;
+use App\Enums\VendorStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Vendor;
 use App\Support\ProductPresenter;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -91,7 +93,12 @@ class CatalogController extends Controller
                 'slug' => $product->slug,
                 'name' => $product->name,
                 'description' => $product->description,
-                'vendor' => $product->vendor?->store_name,
+                'vendor' => $product->vendor === null ? null : [
+                    'name' => $product->vendor->store_name,
+                    'slug' => $product->vendor->slug,
+                    'bio' => $product->vendor->bio,
+                    'approved' => $product->vendor->isApproved(),
+                ],
                 'category' => $product->category?->name,
                 'base_price_cents' => $product->base_price_cents,
                 'thumbnail_url' => $product->thumbnail_path ? route('products.image', $product->_id) : null,
@@ -103,6 +110,40 @@ class CatalogController extends Controller
                     'price_cents' => (int) $v->price_cents,
                     'stock' => (int) $v->stock,
                 ])->all(),
+            ],
+        ]);
+    }
+
+    /**
+     * Public vendor storefront: the vendor's published products + their profile.
+     */
+    public function store(string $slug): Response
+    {
+        $vendor = Vendor::where('slug', $slug)
+            ->where('status', VendorStatus::Approved->value)
+            ->firstOrFail();
+
+        $products = Product::with(['vendor', 'category'])
+            ->where('vendor_id', (string) $vendor->_id)
+            ->where('status', ProductStatus::Published->value)
+            ->orderBy('created_at', 'desc')
+            ->paginate(12)
+            ->withQueryString();
+
+        return Inertia::render('Storefront/Store', [
+            'vendor' => [
+                'name' => $vendor->store_name,
+                'slug' => $vendor->slug,
+                'bio' => $vendor->bio,
+            ],
+            'products' => [
+                'data' => collect($products->items())->map(ProductPresenter::card(...))->all(),
+                'links' => $products->linkCollection()->all(),
+                'meta' => [
+                    'total' => $products->total(),
+                    'from' => $products->firstItem(),
+                    'to' => $products->lastItem(),
+                ],
             ],
         ]);
     }

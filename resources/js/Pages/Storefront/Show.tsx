@@ -22,7 +22,7 @@ interface Product {
     slug: string;
     name: string;
     description: string | null;
-    vendor: string | null;
+    vendor: { name: string; slug: string; bio: string | null; approved: boolean } | null;
     category: string | null;
     base_price_cents: number;
     thumbnail_url: string | null;
@@ -98,11 +98,19 @@ export default function Show({ product }: { product: Product }) {
 
                     {/* Details */}
                     <div>
-                        {product.vendor && (
-                            <p className="text-sm uppercase tracking-wide text-muted-foreground">
-                                {product.vendor}
-                            </p>
-                        )}
+                        {product.vendor &&
+                            (product.vendor.approved ? (
+                                <Link
+                                    href={route('stores.show', product.vendor.slug)}
+                                    className="text-sm uppercase tracking-wide text-muted-foreground hover:text-primary"
+                                >
+                                    {product.vendor.name}
+                                </Link>
+                            ) : (
+                                <p className="text-sm uppercase tracking-wide text-muted-foreground">
+                                    {product.vendor.name}
+                                </p>
+                            ))}
                         <h1 className="mt-1 text-3xl font-bold text-foreground">{product.name}</h1>
                         <p className="mt-3 text-2xl font-semibold text-foreground">
                             {formatCents(price)}
@@ -234,6 +242,33 @@ export default function Show({ product }: { product: Product }) {
                                 <p className="whitespace-pre-line text-sm text-muted-foreground">
                                     {product.description}
                                 </p>
+                            </div>
+                        )}
+
+                        {product.vendor && (
+                            <div className="mt-6 rounded-xl border border-border bg-card p-4">
+                                <p className="text-xs uppercase tracking-wide text-muted-foreground">
+                                    Sold by
+                                </p>
+                                <div className="mt-1 flex items-start justify-between gap-3">
+                                    <div>
+                                        <p className="font-semibold text-foreground">
+                                            {product.vendor.name}
+                                        </p>
+                                        {product.vendor.bio && (
+                                            <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                                                {product.vendor.bio}
+                                            </p>
+                                        )}
+                                    </div>
+                                    {product.vendor.approved && (
+                                        <Button asChild variant="outline" size="sm">
+                                            <Link href={route('stores.show', product.vendor.slug)}>
+                                                Visit store
+                                            </Link>
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </div>

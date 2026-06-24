@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 // Public storefront.
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/stores/{slug}', [CatalogController::class, 'store'])->name('stores.show');
 Route::get('/products/{slug}', [CatalogController::class, 'show'])->name('products.show');
 
 // Controlled product image streaming (no direct filesystem path, random names).

@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Enums\ProductStatus;
+use App\Enums\VendorStatus;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Str;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -84,4 +86,27 @@ it('returns 404 for a draft product detail page', function () {
     $product = Product::factory()->draft()->create();
 
     $this->get(route('products.show', $product->slug))->assertNotFound();
+});
+
+it('shows an approved vendor store with their published products', function () {
+    $owner = User::factory()->vendor()->create();
+    $vendor = Vendor::factory()->create([
+        'user_id' => (string) $owner->_id,
+        'status' => VendorStatus::Approved,
+    ]);
+    vendorProduct($vendor, 2000, 5);
+    vendorProduct($vendor, 3000, 5);
+
+    $this->get(route('stores.show', $vendor->slug))
+        ->assertOk()
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('Storefront/Store')
+            ->where('vendor.name', $vendor->store_name)
+            ->has('products.data', 2));
+});
+
+it('returns 404 for a non-approved vendor store', function () {
+    $vendor = Vendor::factory()->pending()->create();
+
+    $this->get(route('stores.show', $vendor->slug))->assertNotFound();
 });
