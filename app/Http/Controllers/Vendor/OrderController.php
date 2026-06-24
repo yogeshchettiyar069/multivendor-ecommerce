@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Enums\OrderStatus;
 use App\Enums\PayoutStatus;
+use App\Enums\TrackingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Payout;
@@ -15,6 +16,7 @@ use App\Services\CheckoutService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -92,34 +94,42 @@ class OrderController extends Controller
                 'shipping' => $order->shipping,
                 'items' => $items,
                 'my_revenue_cents' => array_sum(array_map(fn (array $x): int => $x['line_total_cents'], $items)),
-                'fulfilled' => $mine->every(fn ($i): bool => $i->fulfilled === true),
+                'tracking_status' => $order->tracking_status?->value ?? 'placed',
             ],
         ]);
     }
 
-    public function fulfill(Request $request, Order $order): RedirectResponse
+    /**
+     * Advance the order's shipment tracking stage. Reaching "Delivered" completes
+     * the order: items fulfilled, payouts ensured and paid, status -> fulfilled.
+     */
+    public function updateTracking(Request $request, Order $order): RedirectResponse
     {
         $vendorId = (string) $this->vendor($request)->_id;
         abort_unless($order->items->contains(fn ($i): bool => (string) $i->vendor_id === $vendorId), 403);
 
-        foreach ($order->items as $item) {
-            if ((string) $item->vendor_id === $vendorId && $item->fulfilled !== true) {
-                $item->fulfilled = true;
-                $order->items()->save($item);
+        $data = $request->validate([
+            'tracking_status' => ['required', Rule::enum(TrackingStatus::class)],
+        ]);
+        $new = TrackingStatus::from($data['tracking_status']);
+
+        $order->tracking_status = $new;
+
+        if ($new === TrackingStatus::Delivered) {
+            foreach ($order->items as $item) {
+                if ($item->fulfilled !== true) {
+                    $item->fulfilled = true;
+                    $order->items()->save($item);
+                }
             }
+            $this->checkout->ensurePayouts($order->fresh());
+            Payout::where('order_id', (string) $order->_id)->update(['status' => PayoutStatus::Paid->value]);
+            $order->status = OrderStatus::Fulfilled;
         }
 
-        $fresh = $order->fresh();
-        if ($fresh->items->every(fn ($i): bool => $i->fulfilled === true)) {
-            $this->checkout->ensurePayouts($fresh);
-            $fresh->update(['status' => OrderStatus::Fulfilled]);
-        }
+        $order->save();
 
-        Payout::where('order_id', (string) $order->_id)
-            ->where('vendor_id', $vendorId)
-            ->update(['status' => PayoutStatus::Paid->value]);
-
-        return back()->with('success', 'Your items have been marked as fulfilled.');
+        return back()->with('success', "Order tracking updated to {$new->label()}.");
     }
 
     private function vendor(Request $request): Vendor
@@ -140,10 +150,10 @@ class OrderController extends Controller
         return [
             'id' => (string) $order->_id,
             'status' => $order->status->value,
+            'tracking_status' => $order->tracking_status?->value ?? 'placed',
             'payment_method' => $order->payment_method,
             'my_items' => $mine->count(),
             'my_revenue_cents' => (int) $mine->sum(fn ($i): int => (int) $i->unit_price_cents * (int) $i->quantity),
-            'fulfilled' => $mine->isNotEmpty() && $mine->every(fn ($i): bool => $i->fulfilled === true),
             'placed_at' => $order->placed_at?->toIso8601String(),
             'created_at' => $order->created_at?->toIso8601String(),
         ];

@@ -14,16 +14,17 @@ export default function Home({ featured, categories }: Props) {
         <StorefrontLayout>
             <Head title="Shop" />
 
-            <section className="border-b border-border bg-primary/5">
-                <div className="mx-auto max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8">
+            <section className="border-b border-border bg-gradient-to-b from-primary/10 via-primary/5 to-background">
+                <div className="mx-auto max-w-7xl px-4 py-20 text-center duration-700 animate-in fade-in slide-in-from-bottom-4 sm:px-6 lg:px-8">
                     <h1 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                        Everything you need, from independent sellers
+                        Everything you need, from{' '}
+                        <span className="text-primary">independent sellers</span>
                     </h1>
                     <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
                         A curated marketplace of products from vendors around the world. One cart,
                         one checkout.
                     </p>
-                    <Button asChild size="lg" className="mt-8">
+                    <Button asChild size="lg" className="mt-8 transition-transform hover:scale-105">
                         <Link href={route('catalog')}>
                             Browse all products <ArrowRight className="h-4 w-4" />
                         </Link>

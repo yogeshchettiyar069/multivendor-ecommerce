@@ -47,6 +47,7 @@ class OrderPresenter
         return [
             'id' => (string) $order->_id,
             'status' => $order->status->value,
+            'tracking_status' => $order->tracking_status?->value ?? 'placed',
             'payment_method' => $order->payment_method,
             'subtotal_cents' => $order->subtotal_cents,
             'total_cents' => $order->total_cents,

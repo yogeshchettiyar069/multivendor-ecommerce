@@ -1,4 +1,5 @@
 import OrderDetailCard from '@/Components/OrderDetailCard';
+import OrderTracker from '@/Components/OrderTracker';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { OrderDetail } from '@/types';
@@ -33,6 +34,7 @@ export default function AdminOrderShow({ order, customer }: Props) {
                     </CardContent>
                 </Card>
 
+                {order.status !== 'cancelled' && <OrderTracker status={order.tracking_status} />}
                 <OrderDetailCard order={order} />
             </div>
         </AuthenticatedLayout>

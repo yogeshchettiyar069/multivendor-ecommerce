@@ -37,12 +37,28 @@ it('shows a vendor only the orders containing their items', function () {
             ->has('orders.data', 1));
 });
 
-it('lets a vendor fulfil their items, completing the order and paying out', function () {
+it('lets a vendor advance order tracking without completing it', function () {
+    $owner = User::factory()->vendor()->create();
+    $vendor = Vendor::factory()->create(['user_id' => (string) $owner->_id]);
+    $order = paidOrderForVendor($vendor, User::factory()->customer()->create());
+
+    $this->actingAs($owner)
+        ->patch(route('vendor.orders.tracking', $order), ['tracking_status' => 'shipped'])
+        ->assertRedirect();
+
+    $order->refresh();
+    expect($order->tracking_status->value)->toBe('shipped')
+        ->and($order->status)->toBe(OrderStatus::Paid);
+});
+
+it('completes the order and pays out when marked delivered', function () {
     $owner = User::factory()->vendor()->create();
     $vendor = Vendor::factory()->create(['user_id' => (string) $owner->_id, 'commission_rate' => 0.10]);
     $order = paidOrderForVendor($vendor, User::factory()->customer()->create());
 
-    $this->actingAs($owner)->patch(route('vendor.orders.fulfill', $order))->assertRedirect();
+    $this->actingAs($owner)
+        ->patch(route('vendor.orders.tracking', $order), ['tracking_status' => 'delivered'])
+        ->assertRedirect();
 
     $order->refresh();
     $payout = Payout::where('order_id', (string) $order->_id)
@@ -50,15 +66,17 @@ it('lets a vendor fulfil their items, completing the order and paying out', func
         ->first();
 
     expect($order->status)->toBe(OrderStatus::Fulfilled)
-        ->and($order->items->every(fn ($i): bool => $i->fulfilled === true))->toBeTrue()
+        ->and($order->tracking_status->value)->toBe('delivered')
         ->and($payout->status)->toBe(PayoutStatus::Paid);
 });
 
-it('forbids a vendor from viewing or fulfilling an order without their items', function () {
+it('forbids a vendor from viewing or updating an order without their items', function () {
     $owner = User::factory()->vendor()->create();
     Vendor::factory()->create(['user_id' => (string) $owner->_id]);
     $order = paidOrderForVendor(Vendor::factory()->create(), User::factory()->customer()->create());
 
     $this->actingAs($owner)->get(route('vendor.orders.show', $order))->assertForbidden();
-    $this->actingAs($owner)->patch(route('vendor.orders.fulfill', $order))->assertForbidden();
+    $this->actingAs($owner)
+        ->patch(route('vendor.orders.tracking', $order), ['tracking_status' => 'shipped'])
+        ->assertForbidden();
 });

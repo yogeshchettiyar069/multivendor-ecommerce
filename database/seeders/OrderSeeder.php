@@ -95,6 +95,12 @@ class OrderSeeder extends Seeder
             'status' => $status,
             'subtotal_cents' => $subtotal,
             'total_cents' => $subtotal,
+            'payment_method' => fake()->randomElement(['card', 'card', 'cod', 'upi']),
+            'tracking_status' => match ($status) {
+                OrderStatus::Fulfilled => 'delivered',
+                OrderStatus::Paid => fake()->randomElement(['placed', 'packed', 'shipped', 'out_for_delivery']),
+                default => 'placed',
+            },
             'stripe_payment_intent_id' => 'pi_'.fake()->unique()->bothify('############################'),
             'placed_at' => fake()->dateTimeBetween('-3 months', 'now'),
         ]);

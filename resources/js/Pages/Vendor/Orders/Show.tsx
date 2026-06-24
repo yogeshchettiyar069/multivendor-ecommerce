@@ -1,7 +1,14 @@
 import OrderStatusBadge from '@/Components/OrderStatusBadge';
-import { Badge } from '@/Components/ui/badge';
+import OrderTracker from '@/Components/OrderTracker';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/Components/ui/select';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents, formatDate } from '@/lib/format';
 import { OrderShipping } from '@/types';
@@ -22,24 +29,34 @@ interface VendorOrderItem {
 interface VendorOrder {
     id: string;
     status: string;
+    tracking_status: string;
     payment_method: string | null;
     placed_at: string | null;
     created_at: string | null;
     shipping: OrderShipping | null;
     items: VendorOrderItem[];
     my_revenue_cents: number;
-    fulfilled: boolean;
 }
 
+const STAGES = [
+    { value: 'placed', label: 'Order Placed' },
+    { value: 'packed', label: 'Packed' },
+    { value: 'shipped', label: 'Shipped' },
+    { value: 'out_for_delivery', label: 'Out for Delivery' },
+    { value: 'delivered', label: 'Delivered' },
+];
+
 export default function VendorOrderShow({ order }: { order: VendorOrder }) {
+    const [stage, setStage] = useState(order.tracking_status);
     const [working, setWorking] = useState(false);
 
-    const fulfill = () => {
+    const update = () => {
         setWorking(true);
-        router.patch(route('vendor.orders.fulfill', order.id), {}, {
-            preserveScroll: true,
-            onFinish: () => setWorking(false),
-        });
+        router.patch(
+            route('vendor.orders.tracking', order.id),
+            { tracking_status: stage },
+            { preserveScroll: true, onFinish: () => setWorking(false) },
+        );
     };
 
     return (
@@ -53,7 +70,7 @@ export default function VendorOrderShow({ order }: { order: VendorOrder }) {
         >
             <Head title="Order" />
 
-            <div className="mx-auto max-w-5xl space-y-4 px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 duration-500 animate-in fade-in slide-in-from-bottom-2 sm:px-6 lg:px-8">
                 <Link
                     href={route('vendor.orders.index')}
                     className="inline-block text-sm text-muted-foreground hover:text-foreground"
@@ -61,13 +78,39 @@ export default function VendorOrderShow({ order }: { order: VendorOrder }) {
                     ← Back to orders
                 </Link>
 
+                {order.status !== 'cancelled' && <OrderTracker status={order.tracking_status} />}
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Update shipment status</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <Select value={stage} onValueChange={setStage}>
+                            <SelectTrigger className="sm:w-64">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {STAGES.map((s) => (
+                                    <SelectItem key={s.value} value={s.value}>
+                                        {s.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <Button onClick={update} disabled={working || stage === order.tracking_status}>
+                            Update status
+                        </Button>
+                        <p className="text-xs text-muted-foreground">
+                            Marking <span className="font-medium">Delivered</span> completes the order
+                            and releases your payout.
+                        </p>
+                    </CardContent>
+                </Card>
+
                 <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
                     <Card>
-                        <CardHeader className="flex flex-row items-center justify-between">
+                        <CardHeader>
                             <CardTitle>Your items</CardTitle>
-                            <Badge variant={order.fulfilled ? 'success' : 'warning'}>
-                                {order.fulfilled ? 'Fulfilled' : 'To fulfil'}
-                            </Badge>
                         </CardHeader>
                         <CardContent className="divide-y divide-border">
                             {order.items.map((item, i) => (
@@ -90,11 +133,8 @@ export default function VendorOrderShow({ order }: { order: VendorOrder }) {
                                             {formatCents(item.unit_price_cents)} × {item.quantity}
                                         </p>
                                     </div>
-                                    <div className="text-right text-sm">
-                                        <div className="font-medium">{formatCents(item.line_total_cents)}</div>
-                                        {item.fulfilled && (
-                                            <span className="text-xs text-emerald-600">Fulfilled</span>
-                                        )}
+                                    <div className="text-sm font-medium">
+                                        {formatCents(item.line_total_cents)}
                                     </div>
                                 </div>
                             ))}
@@ -115,11 +155,6 @@ export default function VendorOrderShow({ order }: { order: VendorOrder }) {
                                     <span className="text-muted-foreground">Placed</span>
                                     <span>{formatDate(order.placed_at ?? order.created_at)}</span>
                                 </div>
-                                {!order.fulfilled && (
-                                    <Button className="mt-2 w-full" onClick={fulfill} disabled={working}>
-                                        Mark my items as fulfilled
-                                    </Button>
-                                )}
                             </CardContent>
                         </Card>
 

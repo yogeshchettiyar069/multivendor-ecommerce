@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Enums\OrderStatus;
 use App\Enums\PayoutStatus;
 use App\Enums\ProductStatus;
+use App\Enums\TrackingStatus;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\Payout;
@@ -58,6 +59,7 @@ class CheckoutService
                 'payment_method' => $paymentMethod,
                 'shipping' => $shipping,
                 'from_cart' => $fromCart,
+                'tracking_status' => TrackingStatus::Placed,
                 'placed_at' => null,
             ]);
 

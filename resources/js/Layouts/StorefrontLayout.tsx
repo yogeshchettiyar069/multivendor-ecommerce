@@ -3,7 +3,7 @@ import { Button } from '@/Components/ui/button';
 import { Toaster } from '@/Components/ui/sonner';
 import { User } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { LayoutDashboard, ShoppingCart, Store } from 'lucide-react';
+import { LayoutDashboard, Menu, ShoppingCart, Store, X } from 'lucide-react';
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -11,6 +11,7 @@ export default function StorefrontLayout({ children }: PropsWithChildren) {
     const { auth, cart, flash } = usePage().props;
     const user = auth.user as User | null;
     const [cartOpen, setCartOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
 
     useEffect(() => {
         if (flash?.success) toast.success(flash.success);
@@ -42,6 +43,13 @@ export default function StorefrontLayout({ children }: PropsWithChildren) {
                     </nav>
 
                     <div className="ml-auto flex items-center gap-2">
+                        <button
+                            onClick={() => setMobileOpen((o) => !o)}
+                            className="rounded-md p-2 text-foreground hover:bg-accent md:hidden"
+                            aria-label="Toggle menu"
+                        >
+                            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        </button>
                         {user ? (
                             <>
                                 <Button variant="ghost" size="sm" asChild>
@@ -75,6 +83,35 @@ export default function StorefrontLayout({ children }: PropsWithChildren) {
                         )}
                     </div>
                 </div>
+                {mobileOpen && (
+                    <div className="border-t border-border md:hidden">
+                        <nav className="space-y-1 px-4 py-3">
+                            <Link
+                                href={route('home')}
+                                onClick={() => setMobileOpen(false)}
+                                className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                            >
+                                Home
+                            </Link>
+                            <Link
+                                href={route('catalog')}
+                                onClick={() => setMobileOpen(false)}
+                                className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                            >
+                                Shop
+                            </Link>
+                            {user && (
+                                <Link
+                                    href={route('orders.index')}
+                                    onClick={() => setMobileOpen(false)}
+                                    className="block rounded-md px-3 py-2 text-sm hover:bg-accent"
+                                >
+                                    My Orders
+                                </Link>
+                            )}
+                        </nav>
+                    </div>
+                )}
             </header>
 
             <main className="flex-1">{children}</main>

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Enums\TrackingStatus;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,6 +49,7 @@ class Order extends Model
         'payment_method',
         'shipping',
         'from_cart',
+        'tracking_status',
         'placed_at',
     ];
 
@@ -62,6 +64,7 @@ class Order extends Model
             'total_cents' => 'integer',
             'shipping' => 'array',
             'from_cart' => 'boolean',
+            'tracking_status' => TrackingStatus::class,
             'placed_at' => 'datetime',
         ];
     }

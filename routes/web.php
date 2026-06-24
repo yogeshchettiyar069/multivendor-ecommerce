@@ -67,7 +67,7 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/orders', [VendorOrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [VendorOrderController::class, 'show'])->name('orders.show');
-        Route::patch('/orders/{order}/fulfill', [VendorOrderController::class, 'fulfill'])->name('orders.fulfill');
+        Route::patch('/orders/{order}/tracking', [VendorOrderController::class, 'updateTracking'])->name('orders.tracking');
     });
 
     // Admin area.

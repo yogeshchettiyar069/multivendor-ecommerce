@@ -10,13 +10,21 @@ import { PackageCheck } from 'lucide-react';
 interface OrderRow {
     id: string;
     status: string;
+    tracking_status: string;
     payment_method: string | null;
     my_items: number;
     my_revenue_cents: number;
-    fulfilled: boolean;
     placed_at: string | null;
     created_at: string | null;
 }
+
+const TRACKING_LABELS: Record<string, string> = {
+    placed: 'Order Placed',
+    packed: 'Packed',
+    shipped: 'Shipped',
+    out_for_delivery: 'Out for Delivery',
+    delivered: 'Delivered',
+};
 
 interface Props {
     orders: {
@@ -73,8 +81,14 @@ export default function VendorOrders({ orders }: Props) {
                                                 <OrderStatusBadge status={o.status} />
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant={o.fulfilled ? 'success' : 'warning'}>
-                                                    {o.fulfilled ? 'Fulfilled' : 'To fulfil'}
+                                                <Badge
+                                                    variant={
+                                                        o.tracking_status === 'delivered'
+                                                            ? 'success'
+                                                            : 'warning'
+                                                    }
+                                                >
+                                                    {TRACKING_LABELS[o.tracking_status] ?? 'Order Placed'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-muted-foreground">
