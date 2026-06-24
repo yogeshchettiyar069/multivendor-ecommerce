@@ -1,3 +1,4 @@
+import SalesChart from '@/Components/SalesChart';
 import StatCard from '@/Components/StatCard';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -19,9 +20,10 @@ interface Props {
         payoutTotalCents: number;
         pendingPayouts: number;
     } | null;
+    sales: Array<{ label: string; cents: number }>;
 }
 
-export default function VendorDashboard({ vendor, stats }: Props) {
+export default function VendorDashboard({ vendor, stats, sales }: Props) {
     return (
         <AuthenticatedLayout
             header={
@@ -73,6 +75,8 @@ export default function VendorDashboard({ vendor, stats }: Props) {
                         />
                     </div>
                 )}
+
+                {sales.length > 0 && <SalesChart data={sales} />}
 
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">

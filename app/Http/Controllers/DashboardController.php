@@ -58,6 +58,7 @@ class DashboardController extends Controller
             return Inertia::render('Dashboard/Vendor', [
                 'vendor' => null,
                 'stats' => null,
+                'sales' => [],
             ]);
         }
 
@@ -78,7 +79,45 @@ class DashboardController extends Controller
                 'payoutTotalCents' => (int) $vendor->payouts()->sum('amount_cents'),
                 'pendingPayouts' => $vendor->payouts()->where('status', 'pending')->count(),
             ],
+            'sales' => $this->salesSeries((string) $vendor->_id),
         ]);
+    }
+
+    /**
+     * Monthly sales (this vendor's revenue) for the last 6 months.
+     *
+     * @return array<int, array{label: string, cents: int}>
+     */
+    private function salesSeries(string $vendorId): array
+    {
+        $start = now()->startOfMonth()->subMonths(5);
+
+        $buckets = [];
+        for ($i = 0; $i < 6; $i++) {
+            $month = $start->copy()->addMonths($i);
+            $buckets[$month->format('Y-m')] = ['label' => $month->format('M'), 'cents' => 0];
+        }
+
+        $orders = Order::where('items.vendor_id', $vendorId)
+            ->whereIn('status', [OrderStatus::Paid->value, OrderStatus::Fulfilled->value])
+            ->get(['items', 'placed_at', 'created_at']);
+
+        foreach ($orders as $order) {
+            $date = $order->placed_at ?? $order->created_at;
+            $key = $date?->format('Y-m');
+
+            if ($key === null || ! isset($buckets[$key])) {
+                continue;
+            }
+
+            foreach ($order->items as $item) {
+                if ((string) $item->vendor_id === $vendorId) {
+                    $buckets[$key]['cents'] += (int) $item->unit_price_cents * (int) $item->quantity;
+                }
+            }
+        }
+
+        return array_values($buckets);
     }
 
     private function customerDashboard(User $user): Response
