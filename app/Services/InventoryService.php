@@ -9,6 +9,7 @@ use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Driver\Session;
+use MongoDB\Laravel\Connection;
 
 class InventoryService
 {
@@ -25,7 +26,9 @@ class InventoryService
      */
     public function deduct(array $lines, Session $session): void
     {
-        $products = DB::connection('mongodb')->getCollection('products');
+        /** @var Connection $connection */
+        $connection = DB::connection('mongodb');
+        $products = $connection->getCollection('products');
 
         foreach ($lines as $line) {
             $result = $products->findOneAndUpdate(
@@ -53,7 +56,9 @@ class InventoryService
      */
     public function restore(Order $order): void
     {
-        $products = DB::connection('mongodb')->getCollection('products');
+        /** @var Connection $connection */
+        $connection = DB::connection('mongodb');
+        $products = $connection->getCollection('products');
 
         foreach ($order->items as $item) {
             $products->updateOne(

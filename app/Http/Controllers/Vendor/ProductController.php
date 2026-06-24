@@ -10,6 +10,7 @@ use App\Http\Requests\Vendor\StoreProductRequest;
 use App\Http\Requests\Vendor\UpdateProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Variant;
 use App\Models\Vendor;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
@@ -188,6 +189,7 @@ class ProductController extends Controller
                 $product->variants()->save($variant);
                 $kept[] = $id;
             } else {
+                /** @var Variant $created */
                 $created = $product->variants()->create($payload);
                 $kept[] = (string) $created->_id;
             }

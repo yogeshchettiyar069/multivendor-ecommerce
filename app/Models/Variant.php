@@ -17,7 +17,7 @@ use MongoDB\Laravel\Eloquent\Model;
  * @property string $sku
  * @property int $price_cents
  * @property int $stock
- * @property array{size?: string, color?: string} $attributes
+ * @property array{size?: string, color?: string}|null $attributes
  */
 class Variant extends Model
 {

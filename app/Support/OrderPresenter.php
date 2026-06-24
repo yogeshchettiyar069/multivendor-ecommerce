@@ -34,7 +34,7 @@ class OrderPresenter
             );
 
             return [
-                'product_name' => $product?->name ?? 'Unavailable product',
+                'product_name' => $product->name ?? 'Unavailable product',
                 'slug' => $product?->slug,
                 'variant_label' => $variant !== null ? self::variantLabel($variant) : null,
                 'unit_price_cents' => (int) $item->unit_price_cents,
@@ -47,7 +47,7 @@ class OrderPresenter
         return [
             'id' => (string) $order->_id,
             'status' => $order->status->value,
-            'tracking_status' => $order->tracking_status?->value ?? 'placed',
+            'tracking_status' => $order->tracking_status->value,
             'payment_method' => $order->payment_method,
             'subtotal_cents' => $order->subtotal_cents,
             'total_cents' => $order->total_cents,

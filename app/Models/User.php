@@ -21,6 +21,7 @@ use MongoDB\Laravel\Relations\HasOne;
  * @property string $email
  * @property string $password
  * @property Role $role
+ * @property array<string, mixed>|null $default_address
  * @property Carbon|null $email_verified_at
  */
 class User extends Authenticatable

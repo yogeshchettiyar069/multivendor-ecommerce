@@ -73,7 +73,10 @@ export default function AdminDashboard({ stats, recentOrders }: Props) {
                                     </thead>
                                     <tbody>
                                         {recentOrders.map((order) => (
-                                            <tr key={order.id} className="border-b border-border/50">
+                                            <tr
+                                                key={order.id}
+                                                className="border-b border-border/50"
+                                            >
                                                 <td className="py-2 pr-4 font-mono text-xs">
                                                     {order.id.slice(-8)}
                                                 </td>

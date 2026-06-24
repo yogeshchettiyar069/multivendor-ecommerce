@@ -1,7 +1,14 @@
 import OrderStatusBadge from '@/Components/OrderStatusBadge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents, formatDate } from '@/lib/format';
 import { Head, Link, router } from '@inertiajs/react';
@@ -61,7 +68,9 @@ export default function OrdersIndex({ orders }: Props) {
                                         <TableRow
                                             key={order.id}
                                             className="cursor-pointer"
-                                            onClick={() => router.visit(route('orders.show', order.id))}
+                                            onClick={() =>
+                                                router.visit(route('orders.show', order.id))
+                                            }
                                         >
                                             <TableCell className="font-mono text-xs">
                                                 {order.id.slice(-10)}

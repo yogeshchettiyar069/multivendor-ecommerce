@@ -30,7 +30,8 @@ export default function AdminOrderShow({ order, customer }: Props) {
                         <CardTitle>Customer</CardTitle>
                     </CardHeader>
                     <CardContent className="text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">{customer.name}</span> · {customer.email}
+                        <span className="font-medium text-foreground">{customer.name}</span> ·{' '}
+                        {customer.email}
                     </CardContent>
                 </Card>
 

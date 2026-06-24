@@ -1,7 +1,14 @@
 import OrderStatusBadge from '@/Components/OrderStatusBadge';
 import { Badge } from '@/Components/ui/badge';
 import { Card, CardContent } from '@/Components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents, formatDate } from '@/lib/format';
 import { Head, router } from '@inertiajs/react';
@@ -69,9 +76,13 @@ export default function VendorOrders({ orders }: Props) {
                                         <TableRow
                                             key={o.id}
                                             className="cursor-pointer"
-                                            onClick={() => router.visit(route('vendor.orders.show', o.id))}
+                                            onClick={() =>
+                                                router.visit(route('vendor.orders.show', o.id))
+                                            }
                                         >
-                                            <TableCell className="font-mono text-xs">{o.id.slice(-10)}</TableCell>
+                                            <TableCell className="font-mono text-xs">
+                                                {o.id.slice(-10)}
+                                            </TableCell>
                                             <TableCell>{o.my_items}</TableCell>
                                             <TableCell>{formatCents(o.my_revenue_cents)}</TableCell>
                                             <TableCell className="text-xs uppercase text-muted-foreground">
@@ -88,7 +99,8 @@ export default function VendorOrders({ orders }: Props) {
                                                             : 'warning'
                                                     }
                                                 >
-                                                    {TRACKING_LABELS[o.tracking_status] ?? 'Order Placed'}
+                                                    {TRACKING_LABELS[o.tracking_status] ??
+                                                        'Order Placed'}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="text-muted-foreground">

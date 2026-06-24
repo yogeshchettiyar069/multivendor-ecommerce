@@ -36,7 +36,10 @@ export default function AdminCategories({ tree, parents }: Props) {
 
     const submitAdd = (e: FormEvent) => {
         e.preventDefault();
-        addForm.transform((d) => ({ ...d, parent_id: d.parent_id === 'root' ? null : d.parent_id }));
+        addForm.transform((d) => ({
+            ...d,
+            parent_id: d.parent_id === 'root' ? null : d.parent_id,
+        }));
         addForm.post(route('admin.categories.store'), {
             preserveScroll: true,
             onSuccess: () => addForm.reset(),
@@ -64,18 +67,29 @@ export default function AdminCategories({ tree, parents }: Props) {
         <div
             key={c.id}
             className={
-                'flex items-center justify-between py-2 ' + (child ? 'border-l border-border pl-4' : '')
+                'flex items-center justify-between py-2 ' +
+                (child ? 'border-l border-border pl-4' : '')
             }
         >
             <span className="text-sm">
                 {c.name}
-                <span className="ml-2 text-xs text-muted-foreground">{c.product_count} products</span>
+                <span className="ml-2 text-xs text-muted-foreground">
+                    {c.product_count} products
+                </span>
             </span>
             <div className="flex gap-1">
-                <Button variant="ghost" size="icon" onClick={() => setEditing({ id: c.id, name: c.name })}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditing({ id: c.id, name: c.name })}
+                >
                     <Pencil className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => setDeleting({ id: c.id, name: c.name })}>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setDeleting({ id: c.id, name: c.name })}
+                >
                     <Trash2 className="h-4 w-4 text-destructive" />
                 </Button>
             </div>
@@ -124,7 +138,9 @@ export default function AdminCategories({ tree, parents }: Props) {
                                     className="mt-1"
                                 />
                                 {addForm.errors.name && (
-                                    <p className="mt-1 text-sm text-destructive">{addForm.errors.name}</p>
+                                    <p className="mt-1 text-sm text-destructive">
+                                        {addForm.errors.name}
+                                    </p>
                                 )}
                             </div>
                             <div>
@@ -159,7 +175,9 @@ export default function AdminCategories({ tree, parents }: Props) {
                     <h3 className="mb-3 text-lg font-semibold">Rename category</h3>
                     <Input
                         value={editing?.name ?? ''}
-                        onChange={(e) => setEditing((s) => (s ? { ...s, name: e.target.value } : s))}
+                        onChange={(e) =>
+                            setEditing((s) => (s ? { ...s, name: e.target.value } : s))
+                        }
                     />
                     <div className="mt-6 flex justify-end gap-3">
                         <Button variant="outline" onClick={() => setEditing(null)}>

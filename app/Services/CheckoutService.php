@@ -15,6 +15,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Support\Facades\DB;
+use MongoDB\Laravel\Connection;
 use RuntimeException;
 
 class CheckoutService
@@ -40,6 +41,7 @@ class CheckoutService
             throw new RuntimeException('Your cart is empty.');
         }
 
+        /** @var Connection $connection */
         $connection = DB::connection('mongodb');
 
         /** @var Order $order */
@@ -156,7 +158,8 @@ class CheckoutService
             ->keyBy(fn (Vendor $v): string => (string) $v->_id);
 
         foreach ($grossByVendor as $vendorId => $gross) {
-            $rate = (float) ($vendors->get($vendorId)?->commission_rate ?? 0.10);
+            $vendor = $vendors->get($vendorId);
+            $rate = $vendor !== null ? (float) $vendor->commission_rate : 0.10;
 
             Payout::create([
                 'vendor_id' => $vendorId,

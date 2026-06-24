@@ -42,9 +42,7 @@ export default function CustomerDashboard({ stats, recentOrders }: Props) {
                         <CardContent className="flex items-center justify-between py-6">
                             <div>
                                 <p className="text-sm font-medium">Sell on our marketplace</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Open your own store
-                                </p>
+                                <p className="text-xs text-muted-foreground">Open your own store</p>
                             </div>
                             <Button asChild size="sm">
                                 <Link href={route('vendor.apply')}>
@@ -78,7 +76,10 @@ export default function CustomerDashboard({ stats, recentOrders }: Props) {
                                     </thead>
                                     <tbody>
                                         {recentOrders.map((order) => (
-                                            <tr key={order.id} className="border-b border-border/50">
+                                            <tr
+                                                key={order.id}
+                                                className="border-b border-border/50"
+                                            >
                                                 <td className="py-2 pr-4 font-mono text-xs">
                                                     {order.id.slice(-8)}
                                                 </td>

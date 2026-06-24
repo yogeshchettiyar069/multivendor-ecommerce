@@ -177,7 +177,9 @@ export default function ProductForm({
                                 className="mt-1 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             />
                             {errors.description && (
-                                <p className="mt-1 text-sm text-destructive">{errors.description}</p>
+                                <p className="mt-1 text-sm text-destructive">
+                                    {errors.description}
+                                </p>
                             )}
                         </div>
                     </CardContent>

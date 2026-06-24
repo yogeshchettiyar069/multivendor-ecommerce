@@ -3,7 +3,14 @@ import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents } from '@/lib/format';
 import { Head, Link, router } from '@inertiajs/react';
@@ -25,7 +32,13 @@ interface Props {
     products: {
         data: ProductRow[];
         links: Array<{ url: string | null; label: string; active: boolean }>;
-        meta: { current_page: number; last_page: number; total: number; from: number | null; to: number | null };
+        meta: {
+            current_page: number;
+            last_page: number;
+            total: number;
+            from: number | null;
+            to: number | null;
+        };
     };
     filters: { search: string; sort: string; direction: string };
 }
@@ -46,11 +59,11 @@ export default function ProductsIndex({ products, filters }: Props) {
             );
         }, 300);
         return () => clearTimeout(handle);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
     const sortBy = (column: string) => {
-        const direction =
-            filters.sort === column && filters.direction === 'asc' ? 'desc' : 'asc';
+        const direction = filters.sort === column && filters.direction === 'asc' ? 'desc' : 'asc';
         router.get(
             route('vendor.products.index'),
             { search, sort: column, direction },
@@ -201,11 +214,7 @@ export default function ProductsIndex({ products, filters }: Props) {
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="flex justify-end gap-1">
-                                                        <Button
-                                                            asChild
-                                                            variant="ghost"
-                                                            size="icon"
-                                                        >
+                                                        <Button asChild variant="ghost" size="icon">
                                                             <Link
                                                                 href={route(
                                                                     'vendor.products.edit',

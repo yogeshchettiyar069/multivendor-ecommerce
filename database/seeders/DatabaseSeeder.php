@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         if (User::where('email', 'admin@example.com')->exists()) {
-            $this->command?->info('Demo data already present — skipping seed.');
+            $this->command->info('Demo data already present — skipping seed.');
 
             return;
         }

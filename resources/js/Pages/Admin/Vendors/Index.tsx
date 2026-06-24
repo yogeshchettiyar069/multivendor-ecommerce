@@ -1,7 +1,14 @@
 import { Badge, BadgeProps } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router } from '@inertiajs/react';
 import { Check, Ban } from 'lucide-react';
@@ -95,22 +102,33 @@ export default function AdminVendors({ vendors, filters, pendingCount }: Props) 
                             <TableBody>
                                 {vendors.data.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                                        <TableCell
+                                            colSpan={6}
+                                            className="py-10 text-center text-muted-foreground"
+                                        >
                                             No vendors found.
                                         </TableCell>
                                     </TableRow>
                                 ) : (
                                     vendors.data.map((v) => (
                                         <TableRow key={v.id}>
-                                            <TableCell className="font-medium">{v.store_name}</TableCell>
+                                            <TableCell className="font-medium">
+                                                {v.store_name}
+                                            </TableCell>
                                             <TableCell className="text-muted-foreground">
                                                 {v.owner}
                                                 <span className="block text-xs">{v.email}</span>
                                             </TableCell>
-                                            <TableCell>{Math.round(v.commission_rate * 100)}%</TableCell>
+                                            <TableCell>
+                                                {Math.round(v.commission_rate * 100)}%
+                                            </TableCell>
                                             <TableCell>{v.products}</TableCell>
                                             <TableCell>
-                                                <Badge variant={STATUS_VARIANT[v.status] ?? 'secondary'}>
+                                                <Badge
+                                                    variant={
+                                                        STATUS_VARIANT[v.status] ?? 'secondary'
+                                                    }
+                                                >
                                                     {v.status}
                                                 </Badge>
                                             </TableCell>

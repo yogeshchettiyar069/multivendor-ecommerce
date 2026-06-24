@@ -72,7 +72,7 @@ class OrderController extends Controller
             $attributes = $variant->attributes ?? [];
 
             return [
-                'product_name' => $product?->name ?? 'Unavailable product',
+                'product_name' => $product->name ?? 'Unavailable product',
                 'variant_label' => $variant !== null
                     ? (implode(' / ', array_filter([$attributes['size'] ?? null, $attributes['color'] ?? null])) ?: 'Default')
                     : null,
@@ -94,7 +94,7 @@ class OrderController extends Controller
                 'shipping' => $order->shipping,
                 'items' => $items,
                 'my_revenue_cents' => array_sum(array_map(fn (array $x): int => $x['line_total_cents'], $items)),
-                'tracking_status' => $order->tracking_status?->value ?? 'placed',
+                'tracking_status' => $order->tracking_status->value,
             ],
         ]);
     }
@@ -150,7 +150,7 @@ class OrderController extends Controller
         return [
             'id' => (string) $order->_id,
             'status' => $order->status->value,
-            'tracking_status' => $order->tracking_status?->value ?? 'placed',
+            'tracking_status' => $order->tracking_status->value,
             'payment_method' => $order->payment_method,
             'my_items' => $mine->count(),
             'my_revenue_cents' => (int) $mine->sum(fn ($i): int => (int) $i->unit_price_cents * (int) $i->quantity),

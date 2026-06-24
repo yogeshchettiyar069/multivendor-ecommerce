@@ -17,6 +17,7 @@
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
+        "larastan/larastan": "^3.10",
         "laravel/breeze": "^2.4",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",

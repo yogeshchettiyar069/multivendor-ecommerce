@@ -59,7 +59,11 @@ export default function Store({ vendor, products }: Props) {
                                 disabled={!link.url}
                                 onClick={() =>
                                     link.url &&
-                                    router.get(link.url, {}, { preserveState: true, preserveScroll: true })
+                                    router.get(
+                                        link.url,
+                                        {},
+                                        { preserveState: true, preserveScroll: true },
+                                    )
                                 }
                                 className={
                                     'min-w-9 rounded-md border px-3 py-1 text-sm transition-colors disabled:opacity-40 ' +

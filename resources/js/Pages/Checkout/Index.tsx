@@ -42,15 +42,42 @@ const FIELDS: Array<{ key: keyof ShippingState; label: string; type?: string; ha
     { key: 'country', label: 'Country' },
 ];
 
-const METHODS: Array<{ value: PaymentMethod; label: string; icon: typeof CreditCard; note: string }> = [
+const METHODS: Array<{
+    value: PaymentMethod;
+    label: string;
+    icon: typeof CreditCard;
+    note: string;
+}> = [
     { value: 'card', label: 'Card', icon: CreditCard, note: 'Pay securely by card via Stripe.' },
-    { value: 'upi', label: 'UPI', icon: Smartphone, note: 'Order placed; UPI payment confirmed on processing.' },
-    { value: 'netbanking', label: 'Netbanking', icon: Landmark, note: 'Order placed; bank payment confirmed on processing.' },
-    { value: 'cod', label: 'Cash on Delivery', icon: Banknote, note: 'Pay in cash when your order arrives.' },
+    {
+        value: 'upi',
+        label: 'UPI',
+        icon: Smartphone,
+        note: 'Order placed; UPI payment confirmed on processing.',
+    },
+    {
+        value: 'netbanking',
+        label: 'Netbanking',
+        icon: Landmark,
+        note: 'Order placed; bank payment confirmed on processing.',
+    },
+    {
+        value: 'cod',
+        label: 'Cash on Delivery',
+        icon: Banknote,
+        note: 'Pay in cash when your order arrives.',
+    },
 ];
 
 function blankShipping(customer: { name: string; email: string }): ShippingState {
-    return { name: customer.name, email: customer.email, address: '', city: '', postal_code: '', country: '' };
+    return {
+        name: customer.name,
+        email: customer.email,
+        address: '',
+        city: '',
+        postal_code: '',
+        country: '',
+    };
 }
 
 function fromSaved(saved: OrderShipping, customer: { name: string; email: string }): ShippingState {
@@ -112,10 +139,11 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                 payload.variant_id = direct.variant_id;
                 payload.quantity = direct.quantity;
             }
-            const { data } = await axios.post<{ mode: string; clientSecret?: string; orderId: string }>(
-                route('checkout.store'),
-                payload,
-            );
+            const { data } = await axios.post<{
+                mode: string;
+                clientSecret?: string;
+                orderId: string;
+            }>(route('checkout.store'), payload);
             if (data.mode === 'card' && data.clientSecret) {
                 setClientSecret(data.clientSecret);
                 setOrderId(data.orderId);
@@ -138,11 +166,23 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
             <div className="mx-auto grid max-w-5xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
                 <div className="space-y-6">
                     <div className="flex items-center gap-2 text-sm">
-                        <span className={step === 'shipping' ? 'font-semibold text-primary' : 'text-muted-foreground'}>
+                        <span
+                            className={
+                                step === 'shipping'
+                                    ? 'font-semibold text-primary'
+                                    : 'text-muted-foreground'
+                            }
+                        >
                             1. Shipping
                         </span>
                         <span className="text-muted-foreground">→</span>
-                        <span className={step === 'payment' ? 'font-semibold text-primary' : 'text-muted-foreground'}>
+                        <span
+                            className={
+                                step === 'payment'
+                                    ? 'font-semibold text-primary'
+                                    : 'text-muted-foreground'
+                            }
+                        >
                             2. Payment
                         </span>
                     </div>
@@ -160,12 +200,17 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                             onClick={chooseSaved}
                                             className={cn(
                                                 'rounded-lg border p-3 text-left text-sm',
-                                                addressMode === 'saved' ? 'border-primary ring-1 ring-primary' : 'border-border',
+                                                addressMode === 'saved'
+                                                    ? 'border-primary ring-1 ring-primary'
+                                                    : 'border-border',
                                             )}
                                         >
-                                            <span className="font-medium">Deliver to saved address</span>
+                                            <span className="font-medium">
+                                                Deliver to saved address
+                                            </span>
                                             <span className="mt-1 block text-xs text-muted-foreground">
-                                                {savedAddress?.name}, {savedAddress?.address}, {savedAddress?.city}
+                                                {savedAddress?.name}, {savedAddress?.address},{' '}
+                                                {savedAddress?.city}
                                             </span>
                                         </button>
                                         <button
@@ -173,7 +218,9 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                             onClick={chooseNew}
                                             className={cn(
                                                 'rounded-lg border p-3 text-left text-sm',
-                                                addressMode === 'new' ? 'border-primary ring-1 ring-primary' : 'border-border',
+                                                addressMode === 'new'
+                                                    ? 'border-primary ring-1 ring-primary'
+                                                    : 'border-border',
                                             )}
                                         >
                                             <span className="font-medium">Use a new address</span>
@@ -184,17 +231,26 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                     </div>
                                 )}
 
-                                <form onSubmit={continueToPayment} className="grid grid-cols-2 gap-4">
+                                <form
+                                    onSubmit={continueToPayment}
+                                    className="grid grid-cols-2 gap-4"
+                                >
                                     {addressMode === 'new' ? (
                                         FIELDS.map((f) => (
-                                            <div key={f.key} className={f.half ? 'col-span-1' : 'col-span-2'}>
+                                            <div
+                                                key={f.key}
+                                                className={f.half ? 'col-span-1' : 'col-span-2'}
+                                            >
                                                 <Label htmlFor={f.key}>{f.label}</Label>
                                                 <Input
                                                     id={f.key}
                                                     type={f.type ?? 'text'}
                                                     value={shipping[f.key]}
                                                     onChange={(e) =>
-                                                        setShipping((s) => ({ ...s, [f.key]: e.target.value }))
+                                                        setShipping((s) => ({
+                                                            ...s,
+                                                            [f.key]: e.target.value,
+                                                        }))
                                                     }
                                                     required
                                                     className="mt-1"
@@ -203,14 +259,23 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                         ))
                                     ) : (
                                         <div className="col-span-2 rounded-md bg-muted/50 p-4 text-sm">
-                                            <p className="font-medium text-foreground">{shipping.name}</p>
-                                            <p className="text-muted-foreground">{shipping.address}</p>
+                                            <p className="font-medium text-foreground">
+                                                {shipping.name}
+                                            </p>
                                             <p className="text-muted-foreground">
-                                                {shipping.city} {shipping.postal_code}, {shipping.country}
+                                                {shipping.address}
+                                            </p>
+                                            <p className="text-muted-foreground">
+                                                {shipping.city} {shipping.postal_code},{' '}
+                                                {shipping.country}
                                             </p>
                                         </div>
                                     )}
-                                    {error && <p className="col-span-2 text-sm text-destructive">{error}</p>}
+                                    {error && (
+                                        <p className="col-span-2 text-sm text-destructive">
+                                            {error}
+                                        </p>
+                                    )}
                                     <div className="col-span-2">
                                         <Button type="submit" size="lg" className="w-full">
                                             Continue to payment
@@ -238,13 +303,19 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                             }}
                                             className={cn(
                                                 'flex items-start gap-3 rounded-lg border p-3 text-left',
-                                                method === m.value ? 'border-primary ring-1 ring-primary' : 'border-border',
+                                                method === m.value
+                                                    ? 'border-primary ring-1 ring-primary'
+                                                    : 'border-border',
                                             )}
                                         >
                                             <m.icon className="mt-0.5 h-5 w-5 text-primary" />
                                             <span>
-                                                <span className="block text-sm font-medium">{m.label}</span>
-                                                <span className="block text-xs text-muted-foreground">{m.note}</span>
+                                                <span className="block text-sm font-medium">
+                                                    {m.label}
+                                                </span>
+                                                <span className="block text-xs text-muted-foreground">
+                                                    {m.note}
+                                                </span>
                                             </span>
                                         </button>
                                     ))}
@@ -253,7 +324,10 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                 {method === 'card' && clientSecret && stripePromise && orderId ? (
                                     <Elements
                                         stripe={stripePromise}
-                                        options={{ clientSecret, appearance: { theme: isDark ? 'night' : 'stripe' } }}
+                                        options={{
+                                            clientSecret,
+                                            appearance: { theme: isDark ? 'night' : 'stripe' },
+                                        }}
                                     >
                                         <PaymentForm orderId={orderId} />
                                     </Elements>
@@ -264,11 +338,15 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                                                 Stripe is not configured.
                                             </p>
                                         )}
-                                        {error && <p className="text-sm text-destructive">{error}</p>}
+                                        {error && (
+                                            <p className="text-sm text-destructive">{error}</p>
+                                        )}
                                         <Button
                                             size="lg"
                                             className="w-full"
-                                            disabled={submitting || (method === 'card' && !stripeKey)}
+                                            disabled={
+                                                submitting || (method === 'card' && !stripeKey)
+                                            }
                                             onClick={submitPayment}
                                         >
                                             {submitting
@@ -300,14 +378,19 @@ export default function Checkout({ cart, direct, stripeKey, customer, savedAddre
                         <CardContent className="space-y-4">
                             <ul className="space-y-3">
                                 {cart.items.map((item) => (
-                                    <li key={item.item_id} className="flex justify-between gap-3 text-sm">
+                                    <li
+                                        key={item.item_id}
+                                        className="flex justify-between gap-3 text-sm"
+                                    >
                                         <span className="text-muted-foreground">
                                             {item.name}
                                             <span className="block text-xs">
                                                 {item.variant_label} × {item.quantity}
                                             </span>
                                         </span>
-                                        <span className="font-medium">{formatCents(item.line_total_cents)}</span>
+                                        <span className="font-medium">
+                                            {formatCents(item.line_total_cents)}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>

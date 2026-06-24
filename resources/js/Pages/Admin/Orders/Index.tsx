@@ -7,7 +7,14 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/Components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/Components/ui/table';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatCents, formatDate } from '@/lib/format';
 import { Head, router } from '@inertiajs/react';
@@ -81,7 +88,10 @@ export default function AdminOrders({ orders, filters, statuses }: Props) {
                             <TableBody>
                                 {orders.data.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
+                                        <TableCell
+                                            colSpan={7}
+                                            className="py-10 text-center text-muted-foreground"
+                                        >
                                             No orders found.
                                         </TableCell>
                                     </TableRow>
@@ -90,9 +100,13 @@ export default function AdminOrders({ orders, filters, statuses }: Props) {
                                         <TableRow
                                             key={o.id}
                                             className="cursor-pointer"
-                                            onClick={() => router.visit(route('admin.orders.show', o.id))}
+                                            onClick={() =>
+                                                router.visit(route('admin.orders.show', o.id))
+                                            }
                                         >
-                                            <TableCell className="font-mono text-xs">{o.id.slice(-10)}</TableCell>
+                                            <TableCell className="font-mono text-xs">
+                                                {o.id.slice(-10)}
+                                            </TableCell>
                                             <TableCell>{o.customer}</TableCell>
                                             <TableCell>{o.item_count}</TableCell>
                                             <TableCell>{formatCents(o.total_cents)}</TableCell>

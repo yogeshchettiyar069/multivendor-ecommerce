@@ -25,7 +25,13 @@ use MongoDB\Laravel\Relations\HasMany;
  * @property int $subtotal_cents
  * @property int $total_cents
  * @property string|null $stripe_payment_intent_id
+ * @property string|null $payment_method
+ * @property array<string, mixed>|null $shipping
+ * @property bool $from_cart
+ * @property TrackingStatus|null $tracking_status
  * @property Carbon|null $placed_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Collection<int, OrderItem> $items
  */
 class Order extends Model

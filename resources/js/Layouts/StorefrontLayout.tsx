@@ -31,7 +31,10 @@ export default function StorefrontLayout({ children }: PropsWithChildren) {
                     </Link>
 
                     <nav className="hidden gap-6 text-sm md:flex">
-                        <Link href={route('home')} className="text-muted-foreground hover:text-foreground">
+                        <Link
+                            href={route('home')}
+                            className="text-muted-foreground hover:text-foreground"
+                        >
                             Home
                         </Link>
                         <Link

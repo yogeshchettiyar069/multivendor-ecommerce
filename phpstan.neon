@@ -1,0 +1,18 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - app
+        - database/factories
+        - database/seeders
+    ignoreErrors:
+        # MongoDB models declare $collection like the framework's $table (untyped).
+        - '#::\$collection has no type specified#'
+        # The package's EmbedsMany generic isn't fully parameterised upstream.
+        - '#does not specify all template types of class MongoDB\\Laravel\\Relations\\EmbedsMany#'
+        # Breeze email-verification scaffolding; we intentionally don't implement MustVerifyEmail.
+        -
+            message: '#expects Illuminate\\Contracts\\Auth\\MustVerifyEmail#'
+            path: app/Http/Controllers/Auth/VerifyEmailController.php

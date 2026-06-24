@@ -11,7 +11,6 @@ import {
 import { Skeleton } from '@/Components/ui/skeleton';
 import { Slider } from '@/Components/ui/slider';
 import StorefrontLayout from '@/Layouts/StorefrontLayout';
-import { formatCents } from '@/lib/format';
 import { Head, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -107,7 +106,9 @@ export default function Catalog({ products, categories, priceBounds, filters }: 
                         </div>
 
                         <div>
-                            <h3 className="mb-2 text-sm font-semibold text-foreground">Categories</h3>
+                            <h3 className="mb-2 text-sm font-semibold text-foreground">
+                                Categories
+                            </h3>
                             <ul className="space-y-1 text-sm">
                                 <li>
                                     <button
@@ -220,7 +221,10 @@ export default function Catalog({ products, categories, priceBounds, filters }: 
                     {loading ? (
                         <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
                             {Array.from({ length: 6 }).map((_, i) => (
-                                <div key={i} className="overflow-hidden rounded-xl border border-border">
+                                <div
+                                    key={i}
+                                    className="overflow-hidden rounded-xl border border-border"
+                                >
                                     <Skeleton className="aspect-square w-full rounded-none" />
                                     <div className="space-y-2 p-4">
                                         <Skeleton className="h-3 w-1/3" />
@@ -260,7 +264,11 @@ export default function Catalog({ products, categories, priceBounds, filters }: 
                                     disabled={!link.url}
                                     onClick={() =>
                                         link.url &&
-                                        router.get(link.url, {}, { preserveState: true, preserveScroll: true })
+                                        router.get(
+                                            link.url,
+                                            {},
+                                            { preserveState: true, preserveScroll: true },
+                                        )
                                     }
                                     className={
                                         'min-w-9 rounded-md border px-3 py-1 text-sm transition-colors disabled:opacity-40 ' +

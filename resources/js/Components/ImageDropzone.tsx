@@ -41,7 +41,9 @@ export default function ImageDropzone({ value, existingUrl, onChange, error }: I
                 }}
                 className={cn(
                     'relative flex min-h-44 cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed p-4 text-center transition-colors focus:outline-none focus:ring-2 focus:ring-ring',
-                    dragging ? 'border-primary bg-primary/5' : 'border-input hover:border-primary/50',
+                    dragging
+                        ? 'border-primary bg-primary/5'
+                        : 'border-input hover:border-primary/50',
                 )}
             >
                 {previewUrl ? (

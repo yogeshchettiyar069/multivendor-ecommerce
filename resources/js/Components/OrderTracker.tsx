@@ -36,7 +36,10 @@ export default function OrderTracker({ status }: { status: string }) {
                             const active = i === current;
                             const Icon = s.icon;
                             return (
-                                <div key={s.key} className="flex w-24 flex-col items-center gap-2 text-center">
+                                <div
+                                    key={s.key}
+                                    className="flex w-24 flex-col items-center gap-2 text-center"
+                                >
                                     <div
                                         className={cn(
                                             'flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-500',
@@ -49,7 +52,9 @@ export default function OrderTracker({ status }: { status: string }) {
                                         {done ? (
                                             <CheckCircle2 className="h-5 w-5" />
                                         ) : (
-                                            <Icon className={cn('h-5 w-5', active && 'animate-pulse')} />
+                                            <Icon
+                                                className={cn('h-5 w-5', active && 'animate-pulse')}
+                                            />
                                         )}
                                     </div>
                                     <span
@@ -89,7 +94,9 @@ export default function OrderTracker({ status }: { status: string }) {
                                         {done ? (
                                             <CheckCircle2 className="h-4 w-4" />
                                         ) : (
-                                            <Icon className={cn('h-4 w-4', active && 'animate-pulse')} />
+                                            <Icon
+                                                className={cn('h-4 w-4', active && 'animate-pulse')}
+                                            />
                                         )}
                                     </div>
                                     {i < STEPS.length - 1 && (

@@ -36,7 +36,7 @@ class OrderController extends Controller
             'orders' => [
                 'data' => collect($orders->items())->map(fn (Order $o): array => [
                     'id' => (string) $o->_id,
-                    'customer' => $users->get((string) $o->user_id)?->name ?? '—',
+                    'customer' => $users->get((string) $o->user_id)->name ?? '—',
                     'status' => $o->status->value,
                     'payment_method' => $o->payment_method,
                     'total_cents' => $o->total_cents,
