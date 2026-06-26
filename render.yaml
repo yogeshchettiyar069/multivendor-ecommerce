@@ -1,0 +1,58 @@
+# Render Blueprint — deploys the app as a single free Docker web service.
+# MongoDB is provided externally by MongoDB Atlas (free M0 cluster).
+#
+# Secrets (sync: false) are NOT stored in git — you enter them once in the Render
+# dashboard. See DEPLOY.md for the click-by-click guide.
+services:
+  - type: web
+    name: multivendor-ecommerce
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    plan: free
+    region: oregon
+    branch: main
+    healthCheckPath: /up
+    autoDeploy: true
+    envVars:
+      - key: APP_NAME
+        value: Marketplace
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      # Generate locally with `php artisan key:generate --show` and paste it here.
+      - key: APP_KEY
+        sync: false
+      # Set to your Render URL once known, e.g. https://multivendor-ecommerce.onrender.com
+      - key: APP_URL
+        sync: false
+      - key: ASSET_URL
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+      # MongoDB Atlas
+      - key: DB_CONNECTION
+        value: mongodb
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DATABASE
+        value: ecommerce
+      # Single-container friendly drivers (no Redis on free tier)
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+      - key: QUEUE_CONNECTION
+        value: sync
+      # Seed the live demo (vendors + catalogue + sample orders) on first boot.
+      - key: SEED_ON_BOOT
+        value: "true"
+      # Stripe (test mode). Optional — card checkout is disabled if omitted.
+      - key: STRIPE_KEY
+        sync: false
+      - key: STRIPE_SECRET
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

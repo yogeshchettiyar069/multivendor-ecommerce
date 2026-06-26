@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend — Pint, PHPStan, Pest
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mongodb, bcmath, gd, intl, zip, pcntl
+          coverage: none
+          tools: composer:v2
+
+      # Single-node MongoDB replica set (transactions require a replica set).
+      - name: Start MongoDB (replica set)
+        uses: supercharge/mongodb-github-action@1.12.0
+        with:
+          mongodb-version: '7.0'
+          mongodb-replica-set: rs0
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Lint — Laravel Pint
+        run: ./vendor/bin/pint --test
+
+      - name: Static analysis — PHPStan (level 6)
+        run: php -d memory_limit=1G ./vendor/bin/phpstan analyse --no-progress
+
+      - name: Tests — Pest
+        env:
+          APP_ENV: testing
+          MONGODB_URI: mongodb://127.0.0.1:27017/?replicaSet=rs0
+          MONGODB_DATABASE: ecommerce_testing
+          CACHE_STORE: array
+          SESSION_DRIVER: array
+          QUEUE_CONNECTION: sync
+          MAIL_MAILER: array
+          BCRYPT_ROUNDS: 4
+        run: php artisan test --compact
+
+  frontend:
+    name: Frontend — ESLint, type-check, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Lint — ESLint
+        run: npm run lint
+
+      - name: Build — Vite production bundle
+        run: npm run build
