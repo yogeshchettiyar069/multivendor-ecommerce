@@ -19,6 +19,11 @@ use Tests\TestCase;
 // before each feature test and re-run migrations to recreate indexes.
 pest()->extend(TestCase::class)
     ->beforeEach(function () {
+        // Feature tests render Inertia pages but never need the compiled
+        // front-end bundle, so stub Vite out. This also keeps the test job
+        // independent of a prior `npm run build` (e.g. in CI).
+        $this->withoutVite();
+
         DB::connection('mongodb')->getDatabase()->drop();
         Artisan::call('migrate', ['--force' => true]);
     })
