@@ -71,11 +71,32 @@ from the admin account).
 
 ## Screenshots
 
-> Add screenshots to `docs/screenshots/` and link them here.
+### Storefront
 
-| Storefront | Vendor dashboard | Order tracking |
-| ---------- | ---------------- | -------------- |
-| _coming soon_ | _coming soon_ | _coming soon_ |
+![Storefront home](docs/screenshots/storefront-home.png)
+
+The customer-facing storefront. A hero with a clear value proposition, a
+**shop-by-category** bar (Apparel, Books, Electronics, Home & Kitchen, Sports &
+Outdoors), and a **Featured products** rail populated from the real catalogue —
+genuine product titles and cover art, not placeholder filler.
+
+### Vendor dashboard
+
+![Vendor dashboard](docs/screenshots/vendor-dashboard.png)
+
+The dashboard for an approved vendor store (_Volt Electronics_). KPI cards surface
+**product count, low-stock alerts, total payouts earned, and pending payouts**, a
+six-month **sales area chart** (recharts) visualises revenue over time, and the
+store's commission rate is shown inline. Each vendor sees only their own data.
+
+### Order tracking
+
+![Order tracking](docs/screenshots/order-tracking.png)
+
+A customer's order detail with the **animated tracking timeline** — Order Placed →
+Packed → Shipped → Out for Delivery → Delivered — advanced by the vendor. Alongside
+it: line items with thumbnails, payment method (here **Cash on Delivery**), order
+totals, and the saved shipping address.
 
 ## Run it in one command
 
