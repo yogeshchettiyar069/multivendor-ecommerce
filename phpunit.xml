@@ -33,5 +33,11 @@
         <env name="QUEUE_CONNECTION" value="sync" force="true"/>
         <env name="SESSION_DRIVER" value="array" force="true"/>
         <env name="TELESCOPE_ENABLED" value="false" force="true"/>
+        <!-- Dummy Stripe credentials so the SDK client can instantiate. The tests
+             never call Stripe's API (webhooks are constructed locally, cash orders
+             skip Stripe), they only need a non-empty key. -->
+        <env name="STRIPE_KEY" value="pk_test_dummy" force="true"/>
+        <env name="STRIPE_SECRET" value="sk_test_dummy" force="true"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_dummy" force="true"/>
     </php>
 </phpunit>
