@@ -7,8 +7,6 @@
 ![MongoDB](https://img.shields.io/badge/MongoDB-7-47A248?logo=mongodb&logoColor=white)
 ![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
 
-> Replace `USERNAME/REPO` in the CI badge above with your GitHub path once pushed.
-
 A production-grade, multi-vendor marketplace where independent vendors manage their
 own catalogue and orders while a platform admin oversees the whole operation —
 built on **Laravel 12**, **MongoDB**, and an **Inertia + React + TypeScript**
