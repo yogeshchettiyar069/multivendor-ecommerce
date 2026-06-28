@@ -1,6 +1,6 @@
 # Multi-Vendor E-Commerce Platform
 
-[![CI](https://github.com/USERNAME/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/REPO/actions/workflows/ci.yml)
+[![CI](https://github.com/yogeshchettiyar069/multivendor-ecommerce/actions/workflows/ci.yml/badge.svg)](https://github.com/yogeshchettiyar069/multivendor-ecommerce/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![PHP 8.3](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
 ![Laravel 12](https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white)
