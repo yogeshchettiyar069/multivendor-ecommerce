@@ -12,7 +12,7 @@ own catalogue and orders while a platform admin oversees the whole operation —
 built on **Laravel 12**, **MongoDB**, and an **Inertia + React + TypeScript**
 front-end, fully containerised so it runs with a single command.
 
-**Live demo:** _add your Render URL here after deploying_ — see [DEPLOY.md](DEPLOY.md)
+**Live demo:** https://multivendor-ecommerce-hcb6.onrender.com — see [DEPLOY.md](DEPLOY.md)
 for free hosting on Render + MongoDB Atlas, click by click.
 
 ## Demo accounts
